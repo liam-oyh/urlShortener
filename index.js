@@ -40,23 +40,38 @@ app.get('/', function(req, res) {
 
 // Your first API endpoint
 // urlId = collection length 
-var urlId;
+/* var urlId;
 var query = Url.find();
 query.count(function (err, count) {
     if (err) console.log(err)
     else urlId = count
-});
+}); */
+
+var urlId;
 
 // create document in DB for url entered
 app.route('/api/shorturl').post(function(req,res){
-    var item = {
-      inputUrl: req.body.url,
-      shortUrl: urlId
-   };
-    var data = new Url(item);
-    data.save();
-    res.json({"original_url": req.body.url, "short_url": urlId}) 
-  })
+  var urlRegex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/;
+
+  if (!req.body.url.match(urlRegex)) {
+    res.json({ error: 'invalid url' })
+  } 
+    
+  
+  var query = Url.find();
+  query.count(function (err, count) {
+    if (err) console.log(err)
+    else urlId = count
+  });
+  
+  var item = {
+    inputUrl: req.body.url,
+    shortUrl: urlId
+  };
+  var data = new Url(item);
+  data.save();
+  res.json({"original_url": req.body.url, "short_url": urlId}) 
+})
 
 app.get('/api/shorturl/:shortUrl', function(req, res) {
   var query = Url.find({shortUrl: req.params.shortUrl}).lean();
