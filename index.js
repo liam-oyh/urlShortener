@@ -47,6 +47,7 @@ query.count(function (err, count) {
     else urlId = count
 });
 
+// create document in DB for url entered
 app.route('/api/shorturl').post(function(req,res){
     var item = {
       inputUrl: req.body.url,
@@ -55,11 +56,20 @@ app.route('/api/shorturl').post(function(req,res){
     var data = new Url(item);
     data.save();
     res.json({"original_url": req.body.url, "short_url": urlId}) 
-    /* res.redirect('/api/shorturl'); */
-  })/* .get(function(req, res) {
-    res.json({"original_url": req.body.url, "short_url": urlId});
-    }); */
-  
+  })
+
+app.get('/api/shorturl/:shortUrl', function(req, res) {
+  var query = Url.find({shortUrl: req.params.shortUrl}).lean();
+  console.log(req.params.shortUrl);
+  query.exec(function(err, result) {
+    // If the document doesn't exist
+    if (err) console.log(error)
+    else 
+      var actualUrl = result[0].inputUrl;
+      console.log(actualUrl);
+      res.redirect(actualUrl)
+  })  
+})  
 
 app.listen(port, function() {
   console.log(`Listening on port ${port}`);
