@@ -39,14 +39,7 @@ app.get('/', function(req, res) {
 
 
 // Your first API endpoint
-// urlId = collection length 
-/* var urlId;
-var query = Url.find();
-query.count(function (err, count) {
-    if (err) console.log(err)
-    else urlId = count
-}); */
-
+ 
 var urlId;
 
 // create document in DB for url entered
@@ -57,7 +50,7 @@ app.route('/api/shorturl').post(function(req,res){
     res.json({ error: 'invalid url' })
   } 
     
-  
+ // urlId = collection length 
   var query = Url.find();
   query.count(function (err, count) {
     if (err) console.log(err)
