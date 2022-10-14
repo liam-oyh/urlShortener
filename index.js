@@ -21,7 +21,7 @@ let urlSchema = new mongoose.Schema({
   shortUrl: {
     type: Number,
     default: 0
-  } , {collection: "urls"});
+  }}, {collection: "urls"});
 
 // Create a model
 const Url = mongoose.model('Url', urlSchema);
@@ -37,22 +37,29 @@ app.get('/', function(req, res) {
   res.sendFile(process.cwd() + '/views/index.html');
 });
 
+
 // Your first API endpoint
 // urlId = collection length 
-app.route('/api/shorturl').get(function(req, res, next) {
-    res.json({"original_url": req.body.url, "short_url": urlId});
-    next();
-  })
-  .post(function(req,res){
+var urlId;
+var query = Url.find();
+query.count(function (err, count) {
+    if (err) console.log(err)
+    else urlId = count
+});
+
+app.route('/api/shorturl').post(function(req,res){
     var item = {
       inputUrl: req.body.url,
       shortUrl: urlId
    };
     var data = new Url(item);
     data.save();
-
-       res.redirect('/');
-  })
+    res.json({"original_url": req.body.url, "short_url": urlId}) 
+    /* res.redirect('/api/shorturl'); */
+  })/* .get(function(req, res) {
+    res.json({"original_url": req.body.url, "short_url": urlId});
+    }); */
+  
 
 app.listen(port, function() {
   console.log(`Listening on port ${port}`);
