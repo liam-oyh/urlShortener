@@ -49,14 +49,20 @@ query.count(function (err, count) {
 
 // create document in DB for url entered
 app.route('/api/shorturl').post(function(req,res){
-    var item = {
-      inputUrl: req.body.url,
-      shortUrl: urlId
-   };
-    var data = new Url(item);
-    data.save();
-    res.json({"original_url": req.body.url, "short_url": urlId}) 
-  })
+  var urlRegex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/;
+
+  if (!req.body.url.match(urlRegex)) {
+    res.json({ error: 'invalid url' })
+  } 
+    
+  var item = {
+    inputUrl: req.body.url,
+    shortUrl: urlId
+  };
+  var data = new Url(item);
+  data.save();
+  res.json({"original_url": req.body.url, "short_url": urlId}) 
+})
 
 app.get('/api/shorturl/:shortUrl', function(req, res) {
   var query = Url.find({shortUrl: req.params.shortUrl}).lean();
